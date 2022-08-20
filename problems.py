@@ -4,7 +4,7 @@ from functools import reduce
 from operator import mul
 from urllib.request import urlopen
 
-from utilities import fibonaccis_to_n, primes_to_n, bottom_up
+from utilities import fibonaccis_to_n, primes_to_n, max_pyramid
 
 
 
@@ -46,9 +46,8 @@ By considering the terms in the Fibonacci sequence whose values do not exceed fo
 def two():
     n = 4000000
     fibs = fibonaccis_to_n(n)
-    even = lambda x: x % 2 == 0
-    evens = (fib for fib in fibs if even(fib))
-    return sum(evens)
+    sum_evens = lambda x, fib: x + fib if fib % 2 else x
+    return reduce(sum_evens, fibs)
 
 problems[2] = TWO
 functions[2] = two
@@ -66,9 +65,10 @@ What is the largest prime factor of the number 600851475143 ?
 def three():
     n = 600851475143
     primes = primes_to_n(int(n ** (1 / 2)))
-    factor = lambda n, x: n % x == 0
-    factors = (prime for prime in primes if factor(n, prime))
-    return max(factors)
+    primes.reverse()
+    for prime in primes:
+        if n % prime == 0:
+            return prime
 
 problems[3] = THREE
 functions[3] = three
@@ -199,7 +199,7 @@ def eight():
 
     # product would be 0
     optimization = lambda n: 0 not in n
-    filtered_ns = (filtered_n for filtered_n in adjacent_ns if optimization(filtered_n))
+    filtered_ns = filter(optimization, adjacent_ns)
     products = (reduce(mul, filtered_n) for filtered_n in filtered_ns)
     return max(products)
 
@@ -333,8 +333,7 @@ it cannot be solved by brute force, and requires a clever method! ;o)
 def eighteen():
     str_pyramid = EIGHTEEN.split('\n')[12:-5]
     # same as sixy_seven
-    pyramid = [[int(n) for n in layer.split(' ')] for layer in str_pyramid]
-    return bottom_up(pyramid, len(pyramid) - 1)[0][0]
+    return max_pyramid(str_pyramid)
 
 problems[18] = EIGHTEEN
 functions[18] = eighteen
@@ -367,8 +366,7 @@ def sixty_seven():
     file = urlopen(url)
     str_pyramid = [line.decode('utf-8') for line in file]
     # same as eighteen
-    pyramid = [[int(n) for n in layer.split(' ')] for layer in str_pyramid]
-    return bottom_up(pyramid, len(pyramid) - 1)[0][0]
+    return max_pyramid(str_pyramid)
 
 problems[67] = SIXTY_SEVEN
 functions[67] = sixty_seven

@@ -23,10 +23,14 @@ def primes_to_n(n):
     return [i for i, prime in enumerate(primes) if prime]
 
 # 18, 67
-def bottom_up(pyramid, base_i):
-    new_base = lambda j: pyramid[base_i - 1][j] + max(pyramid[base_i][j], pyramid[base_i][j + 1])
-    pyramid[base_i - 1] = [new_base(j) for j in range(len(pyramid[base_i - 1]))]
+def max_pyramid(str_pyramid):
+    def bottom_up(pyramid, base_i):
+        new_base = lambda j: pyramid[base_i - 1][j] + max(pyramid[base_i][j], pyramid[base_i][j + 1])
+        pyramid[base_i - 1] = [new_base(j) for j in range(len(pyramid[base_i - 1]))]
 
-    if base_i == 1:
-        return pyramid
-    return bottom_up(pyramid, base_i - 1)
+        if base_i == 1:
+            return pyramid
+        return bottom_up(pyramid, base_i - 1)
+
+    pyramid = [[int(n) for n in layer.split(' ')] for layer in str_pyramid]
+    return bottom_up(pyramid, len(pyramid) - 1)[0][0]
